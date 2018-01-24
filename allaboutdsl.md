@@ -33,7 +33,7 @@ At the same time, ML and AI systems do not come set in stone.
 - The underlying models reflect business and working hypothesis that might change over time
 - Sensitivity analysis should not be only performed against model (hyper)parameters but also against business and working assumptions
 
-DSLs come in handy to express fluently complex business and working assumptions, in a language that reads like English.
+DSLs come in handy to fluently express complex business and working assumptions, in a language that reads like English.
 The example below, coded in [AMPL](https://ampl.com/) describes effectively an optimization problem: 
 we'd like to minimize the transportation costs related to the shipment of products to the clients of a fictional paint company.
 The key assumptions (what want to optimize, shipping costs, product availability at warehouses, product demand at each client) are clearly stated in a language that resembles closely the problem at hand.
@@ -168,7 +168,7 @@ This leads to argue for the birth of a new programming framework out of DSLs spe
 
 
 ## Conclusions
-Expertise in DSLs is mission critical in ML and AI.
+Expertise in DSLs is mission critical in ML and AI systems.
 
 
 
