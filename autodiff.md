@@ -3,10 +3,10 @@
 >OK, Deep Learning has outlived its usefulness as a buzz-phrase.
 Deep Learning est mort. Vive Differentiable Programming! Yan LeCun
 
-In our previous post, while discussing the importance of DSLs in ML and AI, we mentioned the idea of Software 2.0, introduced in [this article]((https://medium.com/@karpathy/software-2-0-a64152b37c35)
+In my previous post, while discussing the importance of DSLs in ML and AI, we mentioned the idea of Software 2.0, introduced in [this article]((https://medium.com/@karpathy/software-2-0-a64152b37c35)
 ) by Andrej Karpathy:
 
->> QUOTE QUOTE QUOTE
+> Software 2.0 is written in neural network weights. No human is involved in writing this code because there are a lot of weights (typical networks might have millions), and coding directly in weights is kind of hard (I tried). Instead, we specify some constraints on the behavior of a desirable program (e.g., a dataset of input output pairs of examples) and use the computational resources at our disposal to search the program space for a program that satisfies the constraints. In the case of neural networks, we restrict the search to a continuous subset of the program space where the search process can be made (somewhat surprisingly) efficient with backpropagation and stochastic gradient descent [[19]](https://medium.com/@karpathy/software-2-0-a64152b37c35)
 
 *Deep Learning is eating software* [[13]](https://petewarden.com/2017/11/13/deep-learning-is-eating-software/). In this post, we'll dig deeper in this.
 
@@ -46,13 +46,20 @@ This "boxing" is the OOD flavour of operator overloading.
 
 # Control Flow, In-Place Operations and Aliasing
 
-It is crucial to note that Automatic Differentiation is applicable to code that contains control flow.  However, control flow might result in code only piecewise differentiable, a significant complexity overhead.
+## Control flow
+It is crucial to note that Automatic Differentiation is applicable to code that contains control flow (branching, looping, ..). The possibility to have control flow is a key selling point of Deep Learning frameworks with Dynamic Computational graphs (ex: PyTorch, Chainer) - a capability oftern referred to as "Define and Run" [[18]](https://medium.com/intuitionmachine/pytorch-dynamic-computational-graphs-and-modular-deep-learning-7e7f89f18d1). However, control flow might result in code only piecewise differentiable, a significant complexity overhead [[4]](https://www-sop.inria.fr/tropics/ad/whatisad.html).
 
+Another approach would be in the flavour of synthetic gradients [[22]](https://arxiv.org/abs/1608.05343?utm_campaign=Revue%20newsletter&utm_medium=Newsletter&utm_source=The%20Wild%20Week%20in%20AI): 
+
+> we can make backprop itself more efficient by introducing decoupled training modules with some synchronization mechanism between them, organized in a hierarchical fashion [[21]](https://blog.keras.io/the-future-of-deep-learning.html)
+
+
+## In-Place operations
 In-place operations, a necessary evil in algorithm design, pose an additionl hazard:
 
 > In-place operations pose a hazard for automatic differentiation, because
 an in-place operation can invalidate data that would be needed in the differentiation
-phase. Additionally, they require nontrivial tape transformations to be performed.  [[16]](https://openreview.net/pdf?id=BJJsrmfCZ)
+phase. Additionally, they require nontrivial tape transformations to be performed. [[16]](https://openreview.net/pdf?id=BJJsrmfCZ)
 
 [[16]](https://openreview.net/pdf?id=BJJsrmfCZ) provides an intuition of how PyTorch deals with in-place operations with invalidation.
 
@@ -67,6 +74,7 @@ y.add_(3)       # y._version == 1
 y.backward()    # ERROR: version mismatch in tanh_backward
 ```
 
+## Aliasing
 Aliasing also constitutes a technical challenge: 
 
 ```python
@@ -80,7 +88,6 @@ computational history has changed as well. Supporting this case is fairly nontri
 rejects this program, using an additional field in the version counter (see Invalidation paragraph) to determine that the data is shared [[16]](https://openreview.net/pdf?id=BJJsrmfCZ)
 
 # Differentiable programming
-
 
 https://www.facebook.com/yann.lecun/posts/10155003011462143
 
@@ -97,18 +104,23 @@ One of the benefits of a higher level abstraction is the possibility to more eas
 
 >The availability of hypergradients allow you to do gradient-based optimization of gradient-based optimization, meaning that you can do things like optimizing learning rate and momentum schedules, weight initialization parameters, or step sizes and mass matrices in Hamiltonian Monte Carlo models. [[11]](http://hypelib.github.io/Hype/); 
 
->Gaining access to gradients with respect to hyperparamters
+> Gaining access to gradients with respect to hyperparamters
 opens up a garden of delights. Instead of straining to eliminate hyperparameters from our models, we can embrace them, and richly hyperparameterize our models. Just as having a high-dimensional elementary parameterization gives a flexible model, having a high-dimensional  hyperparameterization gives flexibility over model classes, regularization, and training methods.[[10]](https://arxiv.org/pdf/1502.03492.pdf)
 
 There are however deeper implications:
 
-> It feels like a new kind of programming altogether, a kind of differentiable functional programming. One writes a very rough functional program, with these flexible, learnable pieces, and defines the correct behavior of the program with lots of data. Then you apply gradient descent, or some other optimization algorithm. The result is a program capable of doing remarkable things that we have no idea how to create directly, like generating captions describing images. [[9](http://colah.github.io/posts/2015-09-NN-Types-FP/)]
+> It feels like a new kind of programming altogether, a kind of differentiable functional programming. One writes a very rough functional program, with these flexible, learnable pieces, and defines the correct behavior of the program with lots of data. Then you apply gradient descent, or some other optimization algorithm. The result is a program capable of doing remarkable things that we have no idea how to create directly, like generating captions describing images. [[9]](http://colah.github.io/posts/2015-09-NN-Types-FP/)
+
+I like where this lines of thoughts goes: functinal programming means functional composability.
+
+> Monolithic Deep Learning networks that are trained end-to-end as we typically find today are intrinsically immensely complex such that we are incapable of interpret its inference or behavior. There are recent research that have shown that an incremental training approach is viable. Networks have been demonstrated to work well by training with smaller units and then subsequently combining them to perform more complex behavior. [[20]](https://medium.com/intuitionmachine/why-teaching-will-be-the-sexiest-job-of-the-future-a-i-economy-b8e1c2ee413e)
 
 # The road adhead of us
 
 I am not sure if the term Differentiable Programming will stick around. The risk of confusion with [Differential *Dynamic* Programming](https://en.wikipedia.org/wiki/Differential_dynamic_programming) is high.
 
-The idea, on the other hand, is intriguing. Very intriguing and I am very happy to see projects such as (Tensorlang)[https://github.com/tensorlang/tensorlang] [[17]](https://medium.com/@maxbendick/designing-a-differentiable-language-for-deep-learning-1812ee480ff1)
+The idea, on the other hand, is intriguing. Very intriguing and I am very happy to see projects such as [Tensorlang](https://github.com/tensorlang/tensorlang) [[17]](https://medium.com/@maxbendick/designing-a-differentiable-language-for-deep-learning-1812ee480ff1)
+
 
 
 # Resources
@@ -119,7 +131,7 @@ The idea, on the other hand, is intriguing. Very intriguing and I am very happy 
 
 [3] Roger Grosse, Intro to Neural Networks and Machine Learning Lecture notes, [link](http://www.cs.toronto.edu/~rgrosse/courses/csc321_2017/readings/L06%20Backpropagation.pdf)
 
-[4] What is Automatic Differentiation ?, [link](https://www-sop.inria.fr/tropics/ad/whatisad.html)
+[4] What is Automatic Differentiation ? [link](https://www-sop.inria.fr/tropics/ad/whatisad.html)
 
 [5] The gradient and the directional derivative, [link](https://math.oregonstate.edu/home/programs/undergrad/CalculusQuestStudyGuides/vcalc/grad/grad.html)
 
@@ -146,3 +158,13 @@ The idea, on the other hand, is intriguing. Very intriguing and I am very happy 
 [16] Paszke, Adam, et al. ["Automatic differentiation in PyTorch."](https://openreview.net/pdf?id=BJJsrmfCZ) (2017)
 
 [17] Max Bendick, Designing a Differentiable Language for Deep Learning, [link](https://medium.com/@maxbendick/designing-a-differentiable-language-for-deep-learning-1812ee480ff1)
+
+[18] Carlos Perez, PyTorch, Dynamic Computational Graphs and Modular Deep Learning, [link](https://medium.com/intuitionmachine/pytorch-dynamic-computational-graphs-and-modular-deep-learning-7e7f89f18d1)
+
+[19] Andrej Karpathy, Software 2.0, [link](https://medium.com/@karpathy/software-2-0-a64152b37c35)
+
+[20] Carlos Perez, Deep Teaching: The Sexiest Job of the Future, [link](https://medium.com/intuitionmachine/why-teaching-will-be-the-sexiest-job-of-the-future-a-i-economy-b8e1c2ee413e)
+
+[21] François Chollet, The future of deep learning, [link](https://blog.keras.io/the-future-of-deep-learning.html)
+
+[22] Jaderberg, Max, et al. ["Decoupled neural interfaces using synthetic gradients."](https://arxiv.org/abs/1608.05343?utm_campaign=Revue%20newsletter&utm_medium=Newsletter&utm_source=The%20Wild%20Week%20in%20AI) arXiv preprint arXiv:1608.05343 (2016).
