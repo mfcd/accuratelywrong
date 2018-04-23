@@ -1,8 +1,5 @@
 # Introduction
 
->OK, Deep Learning has outlived its usefulness as a buzz-phrase.
-Deep Learning est mort. Vive Differentiable Programming! Yan LeCun
-
 In my previous post, while discussing the importance of DSLs in ML and AI, we mentioned the idea of Software 2.0, introduced in [this article]((https://medium.com/@karpathy/software-2-0-a64152b37c35)
 ) by Andrej Karpathy:
 
@@ -51,8 +48,12 @@ It is crucial to note that Automatic Differentiation is applicable to code that 
 
 However, control flow might result in code only piecewise differentiable, a significant complexity overhead [[4]](https://www-sop.inria.fr/tropics/ad/whatisad.html). 
 
-> If machine learning models become more like programs, then they will mostly no longer be differentiable—certainly, these programs will still leverage continuous geometric layers as subroutines, which will be differentiable, but the model as a whole would not be. As a result, using backpropagation to adjust weight values in a fixed, hard-coded network, cannot be the method of choice for training models in the future—at least, it cannot be the whole story. We need to figure out to train non-differentiable systems efficiently. Current approaches include genetic algorithms, "evolution strategies", certain reinforcement learning methods, and ADMM (alternating direction method of multipliers). Naturally, gradient descent is not going anywhere—gradient information will always be useful for optimizing differentiable parametric functions. But our models will certainly become increasingly more ambitious than mere differentiable parametric functions, and thus their automatic development (the "learning" in "machine learning") will require more than backpropagation. [[21]](https://blog.keras.io/the-future-of-deep-learning.html)
+> If machine learning models become more like programs, then they will mostly no longer be differentiable—certainly, these programs will still leverage continuous geometric layers as subroutines, which will be differentiable, but the model as a whole would not be. As a result, using backpropagation to adjust weight values in a fixed, hard-coded network, cannot be the method of choice for training models in the future—at least, it cannot be the whole story. [[21]](https://blog.keras.io/the-future-of-deep-learning.html)
 
+
+> We need to figure out to train non-differentiable systems efficiently. Current approaches include genetic algorithms, "evolution strategies", certain reinforcement learning methods, and ADMM (alternating direction method of multipliers). Naturally, gradient descent is not going anywhere—gradient information will always be useful for optimizing differentiable parametric functions. But our models will certainly become increasingly more ambitious than mere differentiable parametric functions, and thus their automatic development (the "learning" in "machine learning") will require more than backpropagation. [[21]](https://blog.keras.io/the-future-of-deep-learning.html)
+
+Note: interestingly, as we will see, the problem of dealing with control flow leads to an opportunity: the idea of decoupled deep learning modules (as opposed to end-to-end deep learning monolights).
 
 ## In-Place operations
 In-place operations, a necessary evil in algorithm design, pose an additionl hazard:
@@ -89,7 +90,8 @@ rejects this program, using an additional field in the version counter (see Inva
 
 # Differentiable programming
 
-https://www.facebook.com/yann.lecun/posts/10155003011462143
+>OK, Deep Learning has outlived its usefulness as a buzz-phrase.
+Deep Learning est mort. Vive Differentiable Programming! Yan LeCun
 
 One way of viewing deep learning systems is “differentiable functional programming” [[8]](http://www.cs.nuim.ie/~gunes/files/Baydin-MSR-Slides-20160201.pdf). Deep Learning has a functional interpretation: 
 
@@ -100,12 +102,11 @@ higher-order functions (e.g., map, fold, unfold, zip) [[8]](http://www.cs.nuim.i
 
 > The most natural playground for exploring functional structures trained as deep learning networks would be a new language that can run back-propagation directly on functional programs. [[14]](https://www.edge.org/response-detail/26794)
 
-One of the benefits of a higher level abstraction is the possibility to more easily design an infrastructure that tunes model parameters and model hyper-parameters [[10]](https://arxiv.org/pdf/1502.03492.pdf) having access to hypergradient:
+One of the benefits of a higher-level abstraction is the possibility to more easily design infrastructure that tunes model parameters and the hyper-parameters of the model [[10]](https://arxiv.org/pdf/1502.03492.pdf), leveraging on hyper-gradients:
 
->The availability of hypergradients allow you to do gradient-based optimization of gradient-based optimization, meaning that you can do things like optimizing learning rate and momentum schedules, weight initialization parameters, or step sizes and mass matrices in Hamiltonian Monte Carlo models. [[11]](http://hypelib.github.io/Hype/); 
+>The availability of hyper-gradients allow you to do gradient-based optimization of gradient-based optimization, meaning that you can do things like optimizing learning rate and momentum schedules, weight initialization parameters, or step sizes and mass matrices in Hamiltonian Monte Carlo models. [[11]](http://hypelib.github.io/Hype/); 
 
-> Gaining access to gradients with respect to hyperparamters
-opens up a garden of delights. Instead of straining to eliminate hyperparameters from our models, we can embrace them, and richly hyperparameterize our models. Just as having a high-dimensional elementary parameterization gives a flexible model, having a high-dimensional  hyperparameterization gives flexibility over model classes, regularization, and training methods.[[10]](https://arxiv.org/pdf/1502.03492.pdf)
+> Gaining access to gradients with respect to hyper-paramters opens up a garden of delights. Instead of straining to eliminate hyperparameters from our models, we can embrace them, and richly hyperparameterize our models. Just as having a high-dimensional elementary parameterization gives a flexible model, having a high-dimensional  hyperparameterization gives flexibility over model classes, regularization, and training methods.[[10]](https://arxiv.org/pdf/1502.03492.pdf)
 
 There are however deeper implications:
 
@@ -114,6 +115,8 @@ There are however deeper implications:
 I like where this lines of thoughts goes: functinal programming means functional composability.
 
 > Monolithic Deep Learning networks that are trained end-to-end as we typically find today are intrinsically immensely complex such that we are incapable of interpret its inference or behavior. There are recent research that have shown that an incremental training approach is viable. Networks have been demonstrated to work well by training with smaller units and then subsequently combining them to perform more complex behavior. [[20]](https://medium.com/intuitionmachine/why-teaching-will-be-the-sexiest-job-of-the-future-a-i-economy-b8e1c2ee413e)
+
+Decoupled deep learning modules is an exciting research area: *Decoupled Neural Interfaces using Synthetic Gradients* has shown very promising results [[22]](https://arxiv.org/abs/1608.05343?utm_campaign=Revue%20newsletter&utm_medium=Newsletter&utm_source=The%20Wild%20Week%20in%20AI) 
 
 # The road adhead of us
 
