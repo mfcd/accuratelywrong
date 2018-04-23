@@ -28,7 +28,7 @@ variables, requiring more memory.
 The implementation of Automatic Differentiation is an interesting software engineering topic.
 [[15]](http://www-sop.inria.fr/tropics/papers/TapenadeRef12.pdf) identifies two pricipal ways to implement Automatic Differentiation: 
 
-> 1. Operator Overloading - if the language of P permits, one can replace the types of the
+> 1. Operator Overloading - [...] one can replace the types of the
 Foating-point variables with a new type that contains additional derivative information,
 and overload the arithmetic operations for this new type so as to propagate this derivative
 information along
@@ -40,18 +40,18 @@ reason why Operator Overloading AD tools appeared earlier and are more numerous.
 
 > To compute the gradient, Autograd first has to record every transformation that was applied to the input as it was turned into the output of your function. To do this, Autograd wraps functions (using the function `primitive`) so that when they're called, they add themselves to a list of operations performed. Autograd's core has a table mapping these wrapped primitives to their corresponding gradient functions (or, more precisely, their vector-Jacobian product functions). To flag the variables we're taking the gradient with respect to, we wrap them using the `Box` class. You should never have to think about the Box class, but you might notice it when printing out debugging info.
 
-> After the function is evaluated, Autograd has a graph specifying all operations that were performed on the inputs with respect to which we want to differentiate. This is the computational graph of the function evaluation. To compute the derivative, we simply apply the rules of differentiation to each node in the graph. [source](https://github.com/HIPS/autograd/blob/master/docs/tutorial.md)
+> After the function is evaluated, Autograd has a graph specifying all operations that were performed on the inputs with respect to which we want to differentiate. This is the computational graph of the function evaluation. To compute the derivative, we simply apply the rules of differentiation to each node in the graph. [[autograd]](https://github.com/HIPS/autograd/blob/master/docs/tutorial.md)
 
 This "boxing" is the OOD flavour of operator overloading. 
 
-# Control Flow, In-Place Operations and Aliasing
+# Open issues: Control Flow, In-Place Operations and Aliasing
 
 ## Control flow
-It is crucial to note that Automatic Differentiation is applicable to code that contains control flow (branching, looping, ..). The possibility to have control flow is a key selling point of Deep Learning frameworks with Dynamic Computational graphs (ex: PyTorch, Chainer) - a capability oftern referred to as "Define and Run" [[18]](https://medium.com/intuitionmachine/pytorch-dynamic-computational-graphs-and-modular-deep-learning-7e7f89f18d1). However, control flow might result in code only piecewise differentiable, a significant complexity overhead [[4]](https://www-sop.inria.fr/tropics/ad/whatisad.html).
+It is crucial to note that Automatic Differentiation is applicable to code that contains control flow (branching, looping, ..). The possibility to have control flow is a key selling point of Deep Learning frameworks with Dynamic Computational graphs (ex: PyTorch, Chainer) - a capability oftern referred to as "Define and Run" [[18]](https://medium.com/intuitionmachine/pytorch-dynamic-computational-graphs-and-modular-deep-learning-7e7f89f18d1).
 
-Another approach would be in the flavour of synthetic gradients [[22]](https://arxiv.org/abs/1608.05343?utm_campaign=Revue%20newsletter&utm_medium=Newsletter&utm_source=The%20Wild%20Week%20in%20AI): 
+However, control flow might result in code only piecewise differentiable, a significant complexity overhead [[4]](https://www-sop.inria.fr/tropics/ad/whatisad.html). 
 
-> we can make backprop itself more efficient by introducing decoupled training modules with some synchronization mechanism between them, organized in a hierarchical fashion [[21]](https://blog.keras.io/the-future-of-deep-learning.html)
+> If machine learning models become more like programs, then they will mostly no longer be differentiable—certainly, these programs will still leverage continuous geometric layers as subroutines, which will be differentiable, but the model as a whole would not be. As a result, using backpropagation to adjust weight values in a fixed, hard-coded network, cannot be the method of choice for training models in the future—at least, it cannot be the whole story. We need to figure out to train non-differentiable systems efficiently. Current approaches include genetic algorithms, "evolution strategies", certain reinforcement learning methods, and ADMM (alternating direction method of multipliers). Naturally, gradient descent is not going anywhere—gradient information will always be useful for optimizing differentiable parametric functions. But our models will certainly become increasingly more ambitious than mere differentiable parametric functions, and thus their automatic development (the "learning" in "machine learning") will require more than backpropagation. [[21]](https://blog.keras.io/the-future-of-deep-learning.html)
 
 
 ## In-Place operations
@@ -61,7 +61,7 @@ In-place operations, a necessary evil in algorithm design, pose an additionl haz
 an in-place operation can invalidate data that would be needed in the differentiation
 phase. Additionally, they require nontrivial tape transformations to be performed. [[16]](https://openreview.net/pdf?id=BJJsrmfCZ)
 
-[[16]](https://openreview.net/pdf?id=BJJsrmfCZ) provides an intuition of how PyTorch deals with in-place operations with invalidation.
+[[16]](https://openreview.net/pdf?id=BJJsrmfCZ) provides an intuition of how [PyTorch](http://pytorch.org/) deals with in-place operations with invalidation.
 
 > Every underlying storage of a variable is associated with a version
 counter, which tracks how many in-place operations have been applied to the storage. When a
@@ -75,7 +75,7 @@ y.backward()    # ERROR: version mismatch in tanh_backward
 ```
 
 ## Aliasing
-Aliasing also constitutes a technical challenge: 
+Let's look at how [PyTorch](http://pytorch.org/) looks at aliasing: 
 
 ```python
 y = x[:2]
