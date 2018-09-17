@@ -1,12 +1,20 @@
 Despite wide adoption in the industry, our understanding of deep learning is still lagging.
 
-First of all, we deal with a non-convex function, yet SGD works. Why does SGD even converge?
-Secondly, the conondrum of over-parametrization - how can Deep Neural Networks avoid the curse of dimensionality?
+[20], nicely summarized by [21], identifies four research branches:
+
+ - **Non-Convex Optimization**: we deal with a non-convex function, yet SGD works. Why does SGD even converge?
+ - **Overparametrization and Generalization**:  how can Deep Neural Networks avoid the curse of dimensionality?
+
 > Theorists have long assumed networks with hundreds of thousands of neurons and orders of magnitude more individually weighted connections between them should suffer from a fundamental problem: over-parameterization [19]
 
-[4] identifies two research strands:
+ -  **Role of Depth**:  How does depth help a neural network to converge? What is the link between depth and generalization? [21]
+ -  **Generative Models**: Why do Generative Adversarial Networks (GANs) work so well? What theoretical properties could we use to stabilize them or avoid mode collapse? [21]
+
+In this series of articles, we will focus on two areas [4]:
+
 1. the analysis of the topology of the loss function
 2. the width or flatness of the minima
+
  
 #  Loss Function Topology
 ## The starting point: Spin Glasses
@@ -66,6 +74,10 @@ In the next article, we will look at [12], [13] and at the work by Tomaso Poggio
 xxx picture from [15].
 
 
+
+
+
+
 # References
 
 [1] Choromanska, Anna, et al. "The loss surfaces of multilayer networks." _Artificial Intelligence and Statistics_. 2015, [link](http://proceedings.mlr.press/v38/choromanska15.pdf)
@@ -87,3 +99,6 @@ xxx picture from [15].
 [17] Sathiya Keerthi, Interplay between Optimization and Generalization in Deep Neural Networks, 3rd annual Machine Learning in the Real World Workshop, [link](http://www.keerthis.com/Optimization_and_Generalization_Keerthi_Criteo_November_08_2017.pptx)
 [18] Swirszcz, Grzegorz, Wojciech Marian Czarnecki, and Razvan Pascanu. "Local minima in training of deep networks." (2016) [link](https://pdfs.semanticscholar.org/6496/93b2437378699945d36e8203d79a93454273.pdf)
 [19] Chris Edwards, Deep Learning Hunts for Signals Among the Noise, Communications of the ACM, June 2018, Vol. 61 No. 6, Pages 13-14 [link](https://cacm.acm.org/magazines/2018/6/228030-deep-learning-hunts-for-signals-among-the-noise/fulltext)
+[20] Sanjeev Arora, Toward Theoretical
+Understanding of Deep Learning, ICML 2018 [link](https://www.dropbox.com/s/qonozmne0x4x2r3/deepsurveyICML18final.pptx?dl=0)
+[21] Arthur Pesah, Recent Advances for a Better Understanding of Deep Learning − Part I [link](https://towardsdatascience.com/recent-advances-for-a-better-understanding-of-deep-learning-part-i-5ce34d1cc914)
